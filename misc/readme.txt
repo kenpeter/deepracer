@@ -132,21 +132,33 @@ def reward_function(params):
 
     # Calculate the direction in radius, arctan2(dy, dx), the result is (-pi, pi) in radians
 
-    # 1 is y, 0 is x
+    # 1 is y num, 0 is x num
+    # atan2 = arc-tagent 2 argument, now get direction
+    # track_direction == .234343 e.g.
     track_direction = math.atan2(next_point[1] - prev_point[1], next_point[0] - prev_point[0])
 
-    # Convert to degree
+    # to real degree
+    # (.234343 * 180) / math.PI
     track_direction = math.degrees(track_direction)
 
     # Calculate the difference between the track direction and the heading direction of the car
+    # way direction VS car direciton
     direction_diff = abs(track_direction - heading)
 
     # Penalize the reward if the difference is too large
-DIRECTION_THRESHOLD = 10.0
-malus=1
-if direction_diff > DIRECTION_THRESHOLD:
-malus=1-(direction_diff/50)
-if malus<0 or malus>1:
-malus = 0
-reward *= malus
-return reward
+    DIRECTION_THRESHOLD = 10.0
+    malus=1
+
+    # diff to big
+    if direction_diff > DIRECTION_THRESHOLD:
+        # malus = 1 - (direciton diff / 50)
+        malus=1-(direction_diff/50)
+    
+    # too small, too big, malus = 0, reset
+    if malus<0 or malus>1:
+        malus = 0
+
+    # reward = reward + reward *malus
+    reward *= malus
+
+    return reward
